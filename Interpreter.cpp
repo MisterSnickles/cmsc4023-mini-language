@@ -153,6 +153,20 @@ void Interpreter::handleShow(const std::vector<std::string> &tokens) const
     symbolTable.displayAll();
 }
 
+
+void Interpreter::handleHelp() const {
+    std::cout << "HELP MENU\n\n" <<
+                "Commands\n----------------\n" <<
+                "DECLARE: 'DECLARE <TYPE> <name>'  (decalares a variable without assigning a value)\n" <<
+                "SET: 'SET <existing_name> value'  (assigns a value to a declared variable)\n" <<
+                "PRINT: 'PRINT <existing_name>'  (prints exisiting variable)\n" <<
+                "SHOW: 'SHOW'  (shows all initialized variables)\n" <<
+                "EXIT: 'EXIT'  (exits program)\n\n" <<
+                "Possible Variable Types: INT | FLOAT | STRING (value must be in '' '')\n" <<
+                "Example: DECLARE INT count --> SET count 10 --> PRINT count\n\n";
+
+}
+
 bool Interpreter::processLine(const std::string &line)
 {
     bool syntaxError = false;
@@ -177,6 +191,8 @@ bool Interpreter::processLine(const std::string &line)
         handlePrint(tokens);
     else if (tokens[0] == "SHOW")
         handleShow(tokens);
+    else if (tokens[0] == "HELP") 
+        handleHelp();
     else
         std::cout << "Syntax Error: Unknown command '" << tokens[0] << "'.\n";
 

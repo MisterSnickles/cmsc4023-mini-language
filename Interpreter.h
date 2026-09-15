@@ -15,6 +15,7 @@ private:
     void handleSet(const std::vector<std::string>& tokens);
     void handlePrint(const std::vector<std::string>& tokens) const;
     void handleShow(const std::vector<std::string>& tokens) const;
+    void handleHelp() const;
 
 public:
     Interpreter() = default;

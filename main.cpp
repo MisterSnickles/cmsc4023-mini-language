@@ -7,6 +7,8 @@ int main() {
 Interpreter interpreter;
     std::string line;
 
+    std::cout << "Type HELP to get started." << std::endl;
+
     while (true) {
         std::cout << "> ";
         
