@@ -1,10 +1,26 @@
-#include "SymbolTable.h"
+#include <iostream>
+#include <string>
+
+#include "Interpreter.h"
 
 int main() {
+Interpreter interpreter;
+    std::string line;
 
-    SymbolTable symbolTable;
+    while (true) {
+        std::cout << "> ";
+        
+        // Read input line
+        if (!std::getline(std::cin, line)) {
+            break; 
+        }
 
-    symbolTable.displayAll();
+        // Pass raw line directly to Interpreter
+        // Interpreter handles tokenization, blank lines, EXIT, and dispatching
+        if (!interpreter.processLine(line)) {
+            break;
+        }
+    }
 
     return 0;
 }

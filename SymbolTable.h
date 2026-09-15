@@ -17,7 +17,7 @@ class SymbolTable {
 
     // Bool Checks and Setters
     bool isDeclared(const std::string& name) const;
-    bool declareVariable(const std::string& name, const std::string& type, const std::string& value);
+    bool declareVariable(const std::string& name, const std::string& type);
     bool setVariable(const std::string& name, const std::string& value);
 
 

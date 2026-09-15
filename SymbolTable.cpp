@@ -6,7 +6,7 @@ bool SymbolTable::isDeclared(const std::string& name) const
     return symbols.find(name) != symbols.end();
 }
 
-bool SymbolTable::declareVariable(const std::string& name, const std::string& type, const std::string& value)
+bool SymbolTable::declareVariable(const std::string& name, const std::string& type)
 {
     // Check if variable is declared already (if so, return)
     if (isDeclared(name))
@@ -17,7 +17,7 @@ bool SymbolTable::declareVariable(const std::string& name, const std::string& ty
     Symbol newSymbol;
     newSymbol.name = name;
     newSymbol.type = type;
-    newSymbol.value = "NULL";
+    newSymbol.value = "undefined";
     newSymbol.isInitialized = false;
 
     // add symbol to symbols
@@ -76,6 +76,6 @@ void SymbolTable::displayAll() const
         std::cout << std::left
                   << std::setw(15) << sym.name
                   << std::setw(15) << sym.type
-                  << std::setw(15) << sym.value << "\n";
+                  << std::setw(20) << sym.value << "\n";
     }
 }
