@@ -59,38 +59,41 @@ std::vector<std::string> Interpreter::tokenize(const std::string &line, bool &sy
 
 void Interpreter::handleDeclare(const std::vector<std::string> &tokens)
 {
-    // A decalare command from user looks like (DECLARE INT count) which has 3 tokens
+    // A declare command from user looks like (DECLARE count INT) which has 3 tokens
     // Verify user input has 4 tokens
     if (tokens.size() != 3)
     {
-        std::cout << "Syntax Error: DECLARE expects 3 arguments (type, name, value)." << std::endl;
+        std::cout << "Syntax Error: DECLARE expects 2 arguments [DECLARE name TYPE]." << std::endl;
         return;
     }
 
+    // tokens[0] == DECLARE, [1] == name, [2] == TYPE
     // define variables to check if is valid, type, identifier, match
-    bool typeCheck = Validator::isValidType(tokens[1]);
-    bool identifierCheck = Validator::isValidIdentifier(tokens[2]);
+    bool typeCheck = Validator::isValidType(tokens[2]);
+    bool identifierCheck = Validator::isValidIdentifier(tokens[1]);
 
     // Throw error messages if above are false
     if (!typeCheck)
     {
-        std::cout << "Syntax Error: Invalid type '" << tokens[1] << "'.\n";
+        std::cout << "Syntax Error: Invalid type '" << tokens[2] << "'.\n\n";
         return;
     }
     else if (!identifierCheck)
     {
-        std::cout << "Syntax Error: Invalid identifier '" << tokens[2] << "'.\n";
+        std::cout << "Syntax Error: Invalid identifier '" << tokens[1] << "'.\n\n";
         return;
     }
 
 
-    if (symbolTable.isDeclared(tokens[2]))
+    if (symbolTable.isDeclared(tokens[1]))
     {
-        std::cout << "Redeclaration Error:  Variable " << tokens[2] << " already exists." << std::endl;
+        std::cout << "Redeclaration Error:  Variable " << tokens[1] << " already exists.\n" << std::endl;
         return;
     }
 
-    symbolTable.declareVariable(tokens[2], tokens[1]);
+    symbolTable.declareVariable(tokens[1], tokens[2]);
+    std::cout << "Variable '" << tokens[1] << "' declared as " << tokens[2] << ".\n" << std::endl;
+
 }
 
 
@@ -100,13 +103,13 @@ void Interpreter::handleSet(const std::vector<std::string> &tokens)
     // Token size should be 3 for setting
      if (tokens.size() != 3)
     {
-        std::cout << "Syntax Error: SET expects 2 arguments (name, value)." << std::endl;
+        std::cout << "Syntax Error: SET expects 2 arguments [SET name value].\n" << std::endl;
         return;
     }
 
     if (!symbolTable.isDeclared(tokens[1])) 
     {
-        std::cout << "Undeclared Variable Error" << std::endl;
+        std::cout << "Binding Error: '" << tokens[1] << "' has not been declared.\n" << std::endl;
         return;
     }
 
@@ -115,12 +118,13 @@ void Interpreter::handleSet(const std::vector<std::string> &tokens)
 
     // check if type matches
     if (!Validator::matchesType(symbol->type, tokens[2])) {
-        std::cout << "Type Error: Cannot assign '" << tokens[2] << "' to variable of type " << symbol->type << "." << std::endl;
+        std::cout << "Type Error: '" << tokens[1] << "' requires an " << symbol->type << " value.\n" << std::endl;
         return;
     }
     
     // If above passes, set variable to new value
     symbolTable.setVariable(tokens[1], tokens[2]);
+    std::cout << symbol->name << " = " << symbol->value << "\n" << std::endl;
 }
 
 void Interpreter::handlePrint(const std::vector<std::string> &tokens) const
@@ -128,7 +132,7 @@ void Interpreter::handlePrint(const std::vector<std::string> &tokens) const
 
     if (tokens.size() != 2)
     {
-        std::cout << "Syntax Error: PRINT expects 1 argument (name)." << std::endl;
+        std::cout << "Syntax Error: PRINT expects 1 argument [PRINT name].\n" << std::endl;
         return;
     }
 
@@ -140,14 +144,14 @@ void Interpreter::handlePrint(const std::vector<std::string> &tokens) const
     }
 
     const Symbol* sym = symbolTable.getVariable(name);
-    std::cout << sym->value << std::endl;
+    std::cout << sym->value << "\n" << std::endl;
 }
 
 void Interpreter::handleShow(const std::vector<std::string> &tokens) const
 {
 
     if (tokens.size() != 1) {
-        std::cout << "Syntax Error: SHOW command does not accept extra arguments.\n";
+        std::cout << "Syntax Error: SHOW command does not accept extra arguments.\n" << std::endl;
         return;
     }
     symbolTable.displayAll();
@@ -157,13 +161,13 @@ void Interpreter::handleShow(const std::vector<std::string> &tokens) const
 void Interpreter::handleHelp() const {
     std::cout << "HELP MENU\n\n" <<
                 "Commands\n----------------\n" <<
-                "DECLARE: 'DECLARE <TYPE> <name>'  (decalares a variable without assigning a value)\n" <<
+                "DECLARE: 'DECLARE <name> <TYPE>'  (decalares a variable without assigning a value)\n" <<
                 "SET: 'SET <existing_name> value'  (assigns a value to a declared variable)\n" <<
                 "PRINT: 'PRINT <existing_name>'  (prints exisiting variable)\n" <<
                 "SHOW: 'SHOW'  (shows all initialized variables)\n" <<
                 "EXIT: 'EXIT'  (exits program)\n\n" <<
                 "Possible Variable Types: INT | FLOAT | STRING (value must be in '' '')\n" <<
-                "Example: DECLARE INT count --> SET count 10 --> PRINT count\n\n";
+                "Example: DECLARE count INT --> SET count 10 --> PRINT count\n\n";
 
 }
 
@@ -174,15 +178,17 @@ bool Interpreter::processLine(const std::string &line)
 
     if (syntaxError)
     {
-        std::cout << "Syntax Error: Unclosed quotation mark.\n";
+        std::cout << "Syntax Error: Unclosed quotation mark.\n" << std::endl;
         return true;
     }
 
     if (tokens.empty())
         return true;
 
-    if (tokens[0] == "EXIT")
+    if (tokens[0] == "EXIT") {
+        std::cout << "Goodbye." << std::endl;
         return tokens.size() == 1 ? false : true;
+    }
     if (tokens[0] == "DECLARE")
         handleDeclare(tokens);
     else if (tokens[0] == "SET")
@@ -194,7 +200,7 @@ bool Interpreter::processLine(const std::string &line)
     else if (tokens[0] == "HELP") 
         handleHelp();
     else
-        std::cout << "Syntax Error: Unknown command '" << tokens[0] << "'.\n";
+        std::cout << "Syntax Error: Unknown command '" << tokens[0] << "'.\n" << std::endl;
 
     return true;
 }

@@ -58,7 +58,7 @@ void SymbolTable::displayAll() const
 {
     if (symbols.empty())
     {
-        std::cout << "Symbol table is empty.\n";
+        std::cout << "Symbol table is empty.\n\n";
         return;
     }
 
@@ -78,4 +78,5 @@ void SymbolTable::displayAll() const
                   << std::setw(15) << sym.type
                   << std::setw(20) << sym.value << "\n";
     }
+    std::cout << std::endl;
 }
