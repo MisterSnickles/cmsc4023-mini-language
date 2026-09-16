@@ -25,7 +25,6 @@ class SymbolTable {
     // Symbol getter, returns pointer of Symbol object that is unmodifyable, 
     // while not modifying and data in SymbolTable class (const at end)
     const Symbol* getVariable(const std::string& name) const;
-    std::string getType(const std::string& name) const;
 
     // Displays contents of SymbolTable
     void displayAll() const;
